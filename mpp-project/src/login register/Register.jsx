@@ -29,7 +29,7 @@ const Register = () => {
         //     // const { username, password, confirmPassword } = values;
 
         // }
-        axios.post('http://localhost:3000/register', values)
+        axios.post('https://mpp2024.onrender.com/register', values)
         .then(res => {
             console.log(res);
             navigate('/login')

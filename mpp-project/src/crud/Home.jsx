@@ -23,7 +23,7 @@ function Home(props) {
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        axios.get('http://localhost:3000')
+        axios.get('https://mpp2024.onrender.com')
             .then(res => {
                 console.log(res.data)
                 if (res.data.valid) {
@@ -32,7 +32,7 @@ function Home(props) {
                     navigate('/login');
                 }
             })
-        axios.get('http://localhost:3000/food')
+        axios.get('https://mpp2024.onrender.com/food')
             .then(res => {
                 setIsServerOnline(true);
                 setData(res.data.food);
@@ -46,7 +46,7 @@ function Home(props) {
                 console.log(err);
                 setIsServerOnline(false);
             });
-        axios.get('http://localhost:3000/review')
+        axios.get('https://mpp2024.onrender.com/review')
             .then(res => {
                 setDataReview(res.data.review);
             })
@@ -212,9 +212,9 @@ function Home(props) {
     function handleDelete(id) {
         const confirmDelete = window.confirm("Are you sure you want to delete this record?");
         if (confirmDelete) {
-            axios.delete('http://localhost:3000/food/' + id)
+            axios.delete('https://mpp2024.onrender.com/food/' + id)
                 .then(res => {
-                    axios.get('http://localhost:3000/food') //new get req after delete
+                    axios.get('https://mpp2024.onrender.com/food') //new get req after delete
                         .then(res => {
                             setData(res.data.food); // update data
                         })
@@ -228,9 +228,9 @@ function Home(props) {
     function handleDeleteReview(id) {
         const confirmDelete = window.confirm("Are you sure you want to delete this record?");
         if (confirmDelete) {
-            axios.delete('http://localhost:3000/review/' + id)
+            axios.delete('https://mpp2024.onrender.com/review/' + id)
                 .then(res => {
-                    axios.get('http://localhost:3000/review') //new get req after delete
+                    axios.get('https://mpp2024.onrender.com/review') //new get req after delete
                         .then(res => {
                             setDataReview(res.data.review); // update data
                         })

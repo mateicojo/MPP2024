@@ -85,7 +85,7 @@ app.post("/login", (req, res) => {
     if (err) return res.json(err);
     if(data.length > 0){
       req.session.username = data[0].username;
-      //console.log(req.session.username);
+      console.log(req.session.username);
       return res.json({login: true, username: req.session.username});
     }else{
       return res.json({login: false});
@@ -195,7 +195,6 @@ app.delete("/review/:id", (req, res) => {
 app.put("/review/:id", (req, res) => {
   const reviewid = req.params.id;
   const q = "UPDATE review SET `reviewer`= ?, `content`= ?, `food_id`= ? WHERE id = ?";
-  console.log(req.body);
   const values = [
     req.body.reviewer,
     req.body.content,
