@@ -89,6 +89,7 @@ app.post("/login", (req, res) => {
       return res.json(err);
     }
     if (data.length > 0) {
+      console.log(data[0].username);//prints the username
       req.session.username = data[0].username;
       req.session.save(err => {
         if (err) {
@@ -104,7 +105,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  console.log("username: " + req.session.username);//this prints undefined, why? because the session is not saved, to fix it, you need to add the saveUninitialized and resave options to the session object
+  console.log("username: " + req.session.username);//prints undefined
   if(req.session.username){
     return res.json({valid: true, username: req.session.username});
   }else{
