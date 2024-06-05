@@ -81,6 +81,7 @@ app.post("/login", (req, res) => {
     req.body.username,
     req.body.password
   ];
+  console.log(values);
   db.query(q, values, (err, data) => {
     if (err) return res.json(err);
     if(data.length > 0){
