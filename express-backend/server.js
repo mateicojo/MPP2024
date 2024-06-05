@@ -12,7 +12,7 @@ app.use(cookieParser());
 app.use(session({
   secret: 'secret',//key to encrypt the session
   resave: false,
-  saveUninitialized: true,//
+  saveUninitialized: false,//
   cookie: {
     secure: false,
     maxAge: 1000 * 60 * 60 * 24 // 24 hours
@@ -79,6 +79,10 @@ app.post("/login", (req, res) => {
     if (err) return res.json(err);
     if(data.length > 0){
       req.session.username = data[0].username;
+      req.session.save(err => {
+        if (err) return res.json(err);
+        return res.json({ login: true, username: req.session.username });
+      });
       //console.log(req.session.username);
       return res.json({login: true, username: req.session.username});
     }else{
