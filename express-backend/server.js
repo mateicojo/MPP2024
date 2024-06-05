@@ -49,9 +49,8 @@ const authenticateJWT = (req, res, next) => {
 
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 8);
   const q = "INSERT INTO users (username, password) VALUES (?, ?)";
-  const values = [username, hashedPassword];
+  const values = [username, password];
   
   db.query(q, values, (err, data) => {
     if (err) return res.json(err);
@@ -70,11 +69,10 @@ app.post("/login", (req, res) => {
     }
     if (data.length > 0) {
       const user = data[0];
-      const passwordIsValid = bcrypt.compareSync(password, user.password);
-      if (!passwordIsValid) return res.json({ login: false });
-      
-      const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '24h' });
-      return res.json({ login: true, token });
+      if (password == user.password){
+        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '24h' });
+        return res.json({ login: true, token });
+      }
     } else {
       return res.json({ login: false });
     }
