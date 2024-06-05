@@ -21,6 +21,7 @@ app.use(session({
 
 var db = mysql.createConnection({
   host: "mpp.chy0oiuwuiec.eu-north-1.rds.amazonaws.com",
+  port: "3306",
   user: "root",
   password: "Password1",
   database: "mpp"
