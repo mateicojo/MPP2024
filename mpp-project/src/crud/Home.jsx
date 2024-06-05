@@ -23,15 +23,19 @@ function Home(props) {
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        axios.get('https://mpp2024.onrender.com')
-            .then(res => {
-                console.log(res.data)
-                if (res.data.valid) {
-                    setName(res.data.username);
-                } else{
-                    navigate('/login');
-                }
-            })
+        axios.get('https://mpp2024.onrender.com', { withCredentials: true })
+        .then(res => {
+            console.log(res.data);
+            if (res.data.valid) {
+                setName(res.data.username);
+            } else {
+                navigate('/login');
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching session data:', err);
+            navigate('/login');
+        });
         axios.get('https://mpp2024.onrender.com/food')
             .then(res => {
                 setIsServerOnline(true);

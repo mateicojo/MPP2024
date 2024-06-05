@@ -6,6 +6,7 @@ const { faker } = require('@faker-js/faker');
 const mysql = require('mysql2');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const MySQLStore = require('express-mysql-session')(session);
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -31,6 +32,8 @@ db.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 });
+
+const sessionStore = new MySQLStore({}, db.promise());
 
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -67,11 +70,8 @@ app.use((err, req, res, next) => {
 
 
 app.post("/register", (req, res) => {
-  const q = "insert into users (username, password) values (?)";
-  const values = [
-    req.body.username,
-    req.body.password
-  ];
+  const q = "INSERT INTO users (username, password) VALUES (?)";
+  const values = [req.body.username, req.body.password];
   db.query(q, [values], (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
@@ -102,11 +102,11 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  console.log("username: " + req.session.username);//this prints undefined, why? because the session is not saved, to fix it, you need to add the saveUninitialized and resave options to the session object
-  if(req.session.username){
-    return res.json({valid: true, username: req.session.username});
-  }else{
-    return res.json({valid: false});
+  console.log("Session username: ", req.session.username); // Add logging
+  if (req.session.username) {
+    return res.json({ valid: true, username: req.session.username });
+  } else {
+    return res.json({ valid: false });
   }
 });
 
