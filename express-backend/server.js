@@ -12,7 +12,7 @@ app.use(cookieParser());
 app.use(session({
   secret: 'secret',//key to encrypt the session
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,//
   cookie: {
     secure: false,
     maxAge: 1000 * 60 * 60 * 24 // 24 hours
@@ -88,7 +88,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  console.log("username: " + req.session.username);
+  console.log("username: " + req.session.username);//this prints undefined, why? because the session is not saved, to fix it, you need to add the saveUninitialized and resave options to the session object
   if(req.session.username){
     return res.json({valid: true, username: req.session.username});
   }else{
