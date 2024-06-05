@@ -1,0 +1,36 @@
+{
+  "food": [
+    {
+      "id": "bd17",
+      "name": "Frozen yoghurt",
+      "calories": "130",
+      "fat": "45",
+      "carbs": "2",
+      "protein": "90"
+    },
+    {
+      "name": "Eclair",
+      "calories": "1",
+      "fat": 2,
+      "carbs": 6,
+      "protein": 3,
+      "id": "fbce"
+    },
+    {
+      "id": "4c68",
+      "name": "Frozen yoghurt",
+      "calories": "12",
+      "fat": "33",
+      "carbs": "333",
+      "protein": "3333"
+    },
+    {
+      "id": "b101",
+      "name": "Ice cream sandwich",
+      "calories": "120",
+      "fat": "0.9",
+      "carbs": "3",
+      "protein": "2"
+    }
+  ]
+}
