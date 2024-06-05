@@ -20,7 +20,7 @@ app.use(session({
 }));
 
 var db = mysql.createConnection({
-  host: "localhost",
+  host: "mpp.chy0oiuwuiec.eu-north-1.rds.amazonaws.com",
   user: "root",
   password: "Password1",
   database: "mpp"
