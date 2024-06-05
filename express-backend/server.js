@@ -89,8 +89,9 @@ app.post("/login", (req, res) => {
       return res.json(err);
     }
     if (data.length > 0) {
-      console.log(data[0].username);//prints the username
+      console.log(data[0].username + "1");//prints the username
       req.session.username = data[0].username;
+      console.log(req.session.username + "2");
       req.session.save(err => {
         if (err) {
           console.error("Session save error:", err);
