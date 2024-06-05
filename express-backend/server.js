@@ -53,14 +53,7 @@ app.use(cors({
 
 // GET all foods
 
-app.get('/', (req, res) => {
-  console.log(req.session.username);
-  if(req.session.username){
-    return res.json({valid: true, username: req.session.username});
-  }else{
-    return res.json({valid: false});
-  }
-});
+
 
 
 app.post("/register", (req, res) => {
@@ -81,12 +74,12 @@ app.post("/login", (req, res) => {
     req.body.username,
     req.body.password
   ];
-  console.log(values);
+  //console.log(values);
   db.query(q, values, (err, data) => {
     if (err) return res.json(err);
     if(data.length > 0){
       req.session.username = data[0].username;
-      console.log(req.session.username);
+      //console.log(req.session.username);
       return res.json({login: true, username: req.session.username});
     }else{
       return res.json({login: false});
@@ -94,7 +87,14 @@ app.post("/login", (req, res) => {
   });
 });
 
-
+app.get('/', (req, res) => {
+  console.log("username: " + req.session.username);
+  if(req.session.username){
+    return res.json({valid: true, username: req.session.username});
+  }else{
+    return res.json({valid: false});
+  }
+});
 
 
 app.get("/food", (req, res) => {
