@@ -11,38 +11,38 @@ import axios from 'axios';
 import { TableHead } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
-function Home(props) {
+function Home() {
     const [data, setData] = useState([]);
     const [dataReview, setDataReview] = useState([]);
     const [pieChartData, setPieChartData] = useState([]);
-    const navigate = useNavigate();
-    const [isServerOnline, setIsServerOnline] = useState(true); // Track server status
-    const [isOnline, setIsOnline] = useState(navigator.onLine); // Track online status
-    const [showDiv1, setShowDiv1] = useState(true);
     const [name, setName] = useState('');
+    const [showDiv1, setShowDiv1] = useState(true);
+    const [isServerOnline, setIsServerOnline] = useState(true);
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+    const navigate = useNavigate();
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
         axios.get('https://mpp2024.onrender.com', { withCredentials: true })
-        .then(res => {
-            console.log(res.data);
-            if (res.data.valid) {
-                setName(res.data.username);
-            } else {
+            .then(res => {
+                if (res.data.valid) {
+                    setName(res.data.username);
+                } else {
+                    navigate('/login');
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching session data:', err);
                 navigate('/login');
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching session data:', err);
-            navigate('/login');
-        });
+            });
+
         axios.get('https://mpp2024.onrender.com/food')
             .then(res => {
                 setIsServerOnline(true);
                 setData(res.data.food);
-                const pieData = res.data.food.map(item => ({ 
-                    value: item.protein, 
-                    // label: item.name, // Uncomment this line to show item names in the pie chart
+                const pieData = res.data.food.map(item => ({
+                    value: item.protein,
                 }));
                 setPieChartData(pieData);
             })
@@ -50,6 +50,7 @@ function Home(props) {
                 console.log(err);
                 setIsServerOnline(false);
             });
+
         axios.get('https://mpp2024.onrender.com/review')
             .then(res => {
                 setDataReview(res.data.review);
@@ -57,29 +58,48 @@ function Home(props) {
             .catch(err => {
                 console.log(err);
             });
-        // Add event listeners for online/offline events
+
         window.addEventListener('online', handleOnlineStatusChange);
         window.addEventListener('offline', handleOnlineStatusChange);
 
-        // Cleanup event listeners
         return () => {
             window.removeEventListener('online', handleOnlineStatusChange);
             window.removeEventListener('offline', handleOnlineStatusChange);
         };
-    }, []);
-    // Function to handle online status change
+    }, [navigate]);
+
     const handleOnlineStatusChange = () => {
         setIsOnline(navigator.onLine);
     };
-    
-    
+
     const switchTables = () => {
         setShowDiv1(prevState => !prevState);
-      };
+    };
 
     const sortedData = [...data].sort((a, b) => a.calories - b.calories);
     const lowestCaloriesItem = sortedData.length > 0 ? sortedData[0].name : '';
 
+    const handleDelete = (id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this record?");
+        if (confirmDelete) {
+            axios.delete(`https://mpp2024.onrender.com/food/${id}`)
+                .then(() => {
+                    setData(prevData => prevData.filter(d => d.food_id !== id));
+                })
+                .catch(err => console.log(err));
+        }
+    };
+
+    const handleDeleteReview = (id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this record?");
+        if (confirmDelete) {
+            axios.delete(`https://mpp2024.onrender.com/review/${id}`)
+                .then(() => {
+                    setDataReview(prevData => prevData.filter(d => d.review_id !== id));
+                })
+                .catch(err => console.log(err));
+        }
+    };
     return (
         <>
         <br/>
@@ -212,37 +232,6 @@ function Home(props) {
             </div>
         </>
     );
-
-    function handleDelete(id) {
-        const confirmDelete = window.confirm("Are you sure you want to delete this record?");
-        if (confirmDelete) {
-            axios.delete('https://mpp2024.onrender.com/food/' + id)
-                .then(res => {
-                    axios.get('https://mpp2024.onrender.com/food') //new get req after delete
-                        .then(res => {
-                            setData(res.data.food); // update data
-                        })
-                        .catch(err => console.log(err));
-                })
-                .catch(err => console.log(err));
-        }
-    }
-
-    
-    function handleDeleteReview(id) {
-        const confirmDelete = window.confirm("Are you sure you want to delete this record?");
-        if (confirmDelete) {
-            axios.delete('https://mpp2024.onrender.com/review/' + id)
-                .then(res => {
-                    axios.get('https://mpp2024.onrender.com/review') //new get req after delete
-                        .then(res => {
-                            setDataReview(res.data.review); // update data
-                        })
-                        .catch(err => console.log(err));
-                })
-                .catch(err => console.log(err));
-        }
-    }
 }
 
 export default Home;

@@ -4,20 +4,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { faker } = require('@faker-js/faker');
 const mysql = require('mysql2');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+const SECRET_KEY = 'your_secret_key'; // Use a strong secret key in production
 
 app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(session({
-  secret: 'secret',//key to encrypt the session
-  resave: false,
-  saveUninitialized: false,//
-  cookie: {
-    secure: false,
-    maxAge: 1000 * 60 * 60 * 24 // 24 hours
-  }
-}));
 
 var db = mysql.createConnection({
   host: "mpp.chy0oiuwuiec.eu-north-1.rds.amazonaws.com",
@@ -32,86 +24,65 @@ db.connect(function(err) {
   console.log("Connected!");
 });
 
-
-
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
+// Middleware to verify JWT
+const authenticateJWT = (req, res, next) => {
+  const token = req.header('Authorization').split(' ')[1];
+
+  if (token) {
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
   }
-  console.error(err);
-  res.status(500).json({ error: 'Internal Server Error' });
-});
-
-
-// // Generate 20 entities of food data using Faker
-// for (let i = 0; i < 20; i++) {
-//   const food = {
-//     name: faker.commerce.productName(),
-//     calories: faker.number.int({ min: 50, max: 500 }),
-//     fat: faker.number.int({ min: 0, max: 50 }),
-//     carbs: faker.number.int({ min: 0, max: 100 }),
-//     protein: faker.number.int({ min: 0, max: 50 }),
-//     id: faker.string.uuid()
-//   };
-//   foods.push(food);
-// }
-
-// GET all foods
-
-
-
+};
 
 app.post("/register", (req, res) => {
-  const q = "insert into users (username, password) values (?)";
-  const values = [
-    req.body.username,
-    req.body.password
-  ];
-  db.query(q, [values], (err, data) => {
+  const { username, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 8);
+  const q = "INSERT INTO users (username, password) VALUES (?, ?)";
+  const values = [username, hashedPassword];
+  
+  db.query(q, values, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
   });
 });
 
 app.post("/login", (req, res) => {
-  const q = "SELECT * FROM users WHERE username = ? AND password = ?";
-  const values = [req.body.username, req.body.password];
-  db.query(q, values, (err, data) => {
+  const { username, password } = req.body;
+  const q = "SELECT * FROM users WHERE username = ?";
+  
+  db.query(q, [username], (err, data) => {
     if (err) {
       console.error("Database error:", err);
       return res.json(err);
     }
     if (data.length > 0) {
-      console.log(data[0].username + "1");//prints the username
-      req.session.username = data[0].username;
-      console.log(req.session.username + "2");
-      req.session.save(err => {
-        if (err) {
-          console.error("Session save error:", err);
-          return res.json(err);
-        }
-        return res.json({ login: true, username: req.session.username });
-      });
+      const user = data[0];
+      const passwordIsValid = bcrypt.compareSync(password, user.password);
+      if (!passwordIsValid) return res.json({ login: false });
+      
+      const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '24h' });
+      return res.json({ login: true, token });
     } else {
       return res.json({ login: false });
     }
   });
 });
 
-app.get('/', (req, res) => {
-  console.log("username: " + req.session.username);//prints undefined
-  if(req.session.username){
-    return res.json({valid: true, username: req.session.username});
-  }else{
-    return res.json({valid: false});
-  }
+app.get('/profile', authenticateJWT, (req, res) => {
+  res.json({ valid: true, username: req.user.username });
 });
 
 
@@ -267,5 +238,5 @@ app.get("/review/:id", (req, res) => {
 });
 
 app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+  console.log('Server is running on port 3000');
 });
