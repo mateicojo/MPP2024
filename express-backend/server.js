@@ -38,6 +38,16 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  console.error(err);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
+
 // // Generate 20 entities of food data using Faker
 // for (let i = 0; i < 20; i++) {
 //   const food = {
@@ -69,24 +79,24 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const q = "select * from users where username = ? and password = ?";
-  const values = [
-    req.body.username,
-    req.body.password
-  ];
-  //console.log(values);
+  const q = "SELECT * FROM users WHERE username = ? AND password = ?";
+  const values = [req.body.username, req.body.password];
   db.query(q, values, (err, data) => {
-    if (err) return res.json(err);
-    if(data.length > 0){
+    if (err) {
+      console.error("Database error:", err);
+      return res.json(err);
+    }
+    if (data.length > 0) {
       req.session.username = data[0].username;
       req.session.save(err => {
-        if (err) return res.json(err);
+        if (err) {
+          console.error("Session save error:", err);
+          return res.json(err);
+        }
         return res.json({ login: true, username: req.session.username });
       });
-      //console.log(req.session.username);
-      return res.json({login: true, username: req.session.username});
-    }else{
-      return res.json({login: false});
+    } else {
+      return res.json({ login: false });
     }
   });
 });
