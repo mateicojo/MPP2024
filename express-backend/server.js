@@ -39,6 +39,7 @@ app.post("/register",cors(), (req, res) => {
 });
 
 app.post("/login",cors(), (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   const { username, password } = req.body;
   const q = "SELECT * FROM users WHERE username = ?";
   

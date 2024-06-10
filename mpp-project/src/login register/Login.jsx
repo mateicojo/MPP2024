@@ -14,8 +14,11 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add your login logic here
-        axios.post('https://mpp2024.onrender.com/login', values)
+        axios.post('https://mpp2024.onrender.com/login', values, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'JWT fefege...'
+            }})
         .then(res => {
             console.log(res);
             if(res.data.login){
