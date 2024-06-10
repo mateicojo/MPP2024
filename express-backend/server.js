@@ -6,8 +6,6 @@ const { faker } = require('@faker-js/faker');
 const mysql = require('mysql2');
 
 
-const SECRET_KEY = 'your_secret_key'; // Use a strong secret key in production
-
 app.use(bodyParser.json());
 
 var db = mysql.createConnection({
@@ -29,7 +27,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
-app.post("/register", (req, res) => {
+app.post("/register",cors(), (req, res) => {
   const { username, password } = req.body;
   const q = "INSERT INTO users (username, password) VALUES (?, ?)";
   const values = [username, password];
@@ -40,7 +38,7 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.post("/login", (req, res) => {
+app.post("/login",cors(), (req, res) => {
   const { username, password } = req.body;
   const q = "SELECT * FROM users WHERE username = ?";
   
@@ -97,7 +95,7 @@ app.get("/food/:id", (req, res) => {
 
 
 // POST - Add a new food
-app.post("/food", (req, res) => {
+app.post("/food",cors(), (req, res) => {
   const q = "INSERT INTO food(`name`, `calories`, `fat`, `carbs`, `protein`) VALUES (?)";
 
   const values = [
@@ -136,7 +134,7 @@ app.get("/review", (req, res) => {
   });
 });
 
-app.post("/review", (req, res) => {
+app.post("/review",cors(), (req, res) => {
   const q = "INSERT INTO review(`reviewer`, `content`, `food_id`) VALUES (?)";
   const values = [
     req.body.reviewer,
