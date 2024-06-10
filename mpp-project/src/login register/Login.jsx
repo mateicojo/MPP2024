@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
+import CryptoJS from "crypto-js";
+import Cookies from "js-cookie";
 
 
 
@@ -10,18 +12,18 @@ const Login = () => {
         password: ''
     });
     const navigate = useNavigate();
-    axios.defaults.withCredentials = true;
 
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.post('https://mpp2024.onrender.com/login', values, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'JWT fefege...'
             }})
         .then(res => {
             console.log(res);
             if(res.data.login){
+                let tkn = CryptoJS.lib.WordArray.random(16).toString()
+                Cookies.set("token", tkn, {expires: 1})
                 navigate('/');
             }
             else{

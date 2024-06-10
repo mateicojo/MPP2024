@@ -10,6 +10,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TableHead } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import Cookies from "js-cookie";
+
 
 function Home() {
     const [data, setData] = useState([]);
@@ -21,22 +23,26 @@ function Home() {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     const navigate = useNavigate();
-    axios.defaults.withCredentials = true;
+
+    const logOut = () => {
+        Cookies.remove("token")
+        navigate('/login');
+    }
 
     useEffect(() => {
-        axios.get('https://mpp2024.onrender.com', { withCredentials: true })
-            .then(res => {
-                // if (res.data.valid) {
-                //     setName(res.data.username);
-                // } else {
-                //     navigate('/login');
-                // }
-                setName(res.data.username);
-            })
-            .catch(err => {
-                console.error('Error fetching session data:', err);
-                navigate('/login');
-            });
+        // axios.get('http://localhost:3000')
+        //     .then(res => {
+        //         // if (res.data.valid) {
+        //         //     setName(res.data.username);
+        //         // } else {
+        //         //     navigate('/login');
+        //         // }
+        //         setName(res.data.username);
+        //     })
+        //     .catch(err => {
+        //         console.error('Error fetching session data:', err);
+        //         navigate('/login');
+        //     });
 
         axios.get('https://mpp2024.onrender.com/food')
             .then(res => {
@@ -101,11 +107,15 @@ function Home() {
                 .catch(err => console.log(err));
         }
     };
+    if(Cookies.get('token') == undefined){
+        return ("You are not logged in");
+    }
     return (
         <>
         <br/>
         <div >
         Welcome {name}
+        <button onClick={logOut}>Log out</button>
 
         </div>
             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>

@@ -23,7 +23,6 @@ db.connect(function(err) {
 
 app.use(cors({
   origin: 'http://localhost:5173',
-  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
@@ -38,12 +37,14 @@ app.post("/register",cors(), (req, res) => {
   });
 });
 
+
+app.options('/login', cors());
 app.post("/login",cors(), (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   const { username, password } = req.body;
-  const q = "SELECT * FROM users WHERE username = ?";
+  const q = "SELECT * FROM users WHERE username = ? and password = ?";
   
-  db.query(q, [username], (err, data) => {
+  db.query(q, [username,password], (err, data) => {
     if (err) {
       console.error("Database error:", err);
       return res.json(err);
@@ -52,7 +53,7 @@ app.post("/login",cors(), (req, res) => {
     if (data.length > 0) {
       const user = data[0];
       if (password == user.password){
-        return res.json({ login: true, token });
+        return res.json({ login: true});
       }
     } else {
       return res.json({ login: false });
