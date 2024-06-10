@@ -17,7 +17,7 @@ export default function Update(props) {
     const navigate = useNavigate();
 
     useEffect(()=>{
-        axios.get('http://localhost:3000/food/'+id)
+        axios.get('https://mpp2024.onrender.com/food/'+id)
         .then(res =>setInputData(res.data))
         .catch(err => console.log(err))
     },[])
@@ -26,7 +26,7 @@ export default function Update(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log(inputData)
-        axios.put('http://localhost:3000/food/'+id, inputData)
+        axios.put('https://mpp2024.onrender.com/food/'+id, inputData)
         .then(res => {
             alert("Updated")
             navigate('/') //go back to home

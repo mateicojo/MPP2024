@@ -15,7 +15,7 @@ export default function Update(props) {
     const navigate = useNavigate();
 
     useEffect(()=>{
-        axios.get('http://localhost:3000/review/'+id)
+        axios.get('https://mpp2024.onrender.com/review/'+id)
         .then(res =>setInputData(res.data))
         .catch(err => console.log(err))
     },[])

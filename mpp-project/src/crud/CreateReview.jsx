@@ -15,7 +15,7 @@ function Create() {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log(inputData)
-        axios.post('http://localhost:3000/review', inputData)
+        axios.post('https://mpp2024.onrender.com/review', inputData)
         .then(res => {
             alert("Created")
             navigate('/') //go back to home

@@ -26,11 +26,12 @@ function Home() {
     useEffect(() => {
         axios.get('https://mpp2024.onrender.com', { withCredentials: true })
             .then(res => {
-                if (res.data.valid) {
-                    setName(res.data.username);
-                } else {
-                    navigate('/login');
-                }
+                // if (res.data.valid) {
+                //     setName(res.data.username);
+                // } else {
+                //     navigate('/login');
+                // }
+                setName(res.data.username);
             })
             .catch(err => {
                 console.error('Error fetching session data:', err);

@@ -4,8 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { faker } = require('@faker-js/faker');
 const mysql = require('mysql2');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+
 
 const SECRET_KEY = 'your_secret_key'; // Use a strong secret key in production
 
@@ -30,23 +29,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
-// Middleware to verify JWT
-const authenticateJWT = (req, res, next) => {
-  const token = req.header('Authorization').split(' ')[1];
-
-  if (token) {
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
-      req.user = user;
-      next();
-    });
-  } else {
-    res.sendStatus(401);
-  }
-};
-
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
   const q = "INSERT INTO users (username, password) VALUES (?, ?)";
@@ -67,10 +49,10 @@ app.post("/login", (req, res) => {
       console.error("Database error:", err);
       return res.json(err);
     }
+    console.log(data.length);
     if (data.length > 0) {
       const user = data[0];
       if (password == user.password){
-        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '24h' });
         return res.json({ login: true, token });
       }
     } else {
@@ -79,9 +61,6 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.get('/profile', authenticateJWT, (req, res) => {
-  res.json({ valid: true, username: req.user.username });
-});
 
 
 app.get("/food", (req, res) => {

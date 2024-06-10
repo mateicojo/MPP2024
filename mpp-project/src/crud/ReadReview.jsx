@@ -9,7 +9,7 @@ export default function Read(props) {
     
 
     useEffect(()=>{
-        axios.get('http://localhost:3000/review/'+id)
+        axios.get('https://mpp2024.onrender.com/review/'+id)
         .then(res=>setData(res.data))
         .catch(err=>console.log(err))
     },[])
