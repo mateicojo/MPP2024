@@ -1,4 +1,3 @@
-MPP
 A web application I made over the 2nd semester of the 2nd year at UBB.
 This was also my first experience with React, Express-js and application deployment. During the making of this project, I got the full stack developer experience. 
 used MaterialUI for some frontend elements (tables, buttons, charts)
